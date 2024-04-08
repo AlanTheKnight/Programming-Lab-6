@@ -1,0 +1,31 @@
+help
+
+# Add new employee
+insert 10
+Vasya
+100
+200
+100000
+2030-01-01
+DEVELOPER
+REGULAR
+177
+66
+
+
+
+# Add new employee
+insert 8
+Tolya
+100
+200
+100000
+2030-01-01
+DEVELOPER
+REGULAR
+177
+66
+
+
+
+show
