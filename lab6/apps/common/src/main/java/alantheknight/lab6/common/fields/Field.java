@@ -13,14 +13,37 @@ import org.w3c.dom.Element;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+/**
+ * Field class represents a field of a model.
+ *
+ * @param <T> field value type
+ */
 public class Field<T> implements Convertible, Validatable, Serializable {
-    String name;
-    String verboseName;
-    boolean askForValue = true;
+    /**
+     * Field name (representing the field in the XML).
+     */
+    private final String name;
+    /**
+     * Field verbose name (for user output).
+     */
+    private final String verboseName;
+    /**
+     * Whether to ask for the value of the field.
+     */
+    private boolean askForValue = true;
+    /**
+     * Field value.
+     */
     private T value;
+    /**
+     * Field checker used for field value validation.
+     */
     private FieldChecker<T> checker = new DefaultFieldChecker<>();
 
-    private boolean isRequired = true;
+    /**
+     * Whether the field is required.
+     */
+    private boolean required = true;
 
     public Field(String name, String verboseName) {
         this.name = name;
@@ -38,46 +61,76 @@ public class Field<T> implements Convertible, Validatable, Serializable {
         this.checker = checker;
     }
 
-    public Field(String name, String verboseName, T value, boolean isRequired, FieldChecker<T> checker) {
+    public Field(String name, String verboseName, T value, boolean required, FieldChecker<T> checker) {
         this(name, verboseName, value, checker);
-        this.isRequired = isRequired;
+        this.required = required;
     }
 
-    public Field(String name, String verboseName, T value, boolean isRequired) {
+    public Field(String name, String verboseName, T value, boolean required) {
         this(name, verboseName, value);
-        this.isRequired = isRequired;
+        this.required = required;
     }
 
-    public Field(String name, String verboseName, T value, boolean isRequired, boolean askForValue) {
-        this(name, verboseName, value, isRequired);
+    public Field(String name, String verboseName, T value, boolean required, boolean askForValue) {
+        this(name, verboseName, value, required);
         this.askForValue = askForValue;
     }
 
+    /**
+     * Get the class of the field value.
+     *
+     * @return class of the field value
+     */
     @SuppressWarnings("unchecked")
     public Class<T> getValueClass() {
         return (Class<T>) this.value.getClass();
     }
 
+    /**
+     * Get the field value.
+     *
+     * @return field value
+     */
     public T getValue() {
         return value;
     }
 
+    /**
+     * Set the field value.
+     *
+     * @param value field value
+     */
     public void setValue(T value) {
         this.value = value;
     }
 
+    /**
+     * Check if the field value is valid.
+     *
+     * @return a pair of a boolean indicating if the value is valid and a message
+     */
     public ImmutablePair<Boolean, String> isValid() {
-        if (isRequired && value == null) {
+        if (required && value == null) {
             return new ImmutablePair<>(false, "Поле " + name + " не может быть пустым");
         }
         return checker.isValid(value);
     }
 
+    /**
+     * Check if the field value is valid.
+     *
+     * @param value the value to check
+     * @return a pair of a boolean indicating if the value is valid and a message
+     */
     public ImmutablePair<Boolean, String> isValid(T value) {
         return checker.isValid(value);
     }
 
+    @Override
     public Element getElement(Document document) {
+        if (value instanceof Model)
+            return ((Model) value).getElement(document);
+
         Element element = document.createElement(name);
         element.setTextContent(value == null ? "null" : value.toString());
         return element;
@@ -107,7 +160,7 @@ public class Field<T> implements Convertible, Validatable, Serializable {
     }
 
     public boolean isRequired() {
-        return isRequired;
+        return required;
     }
 
     public String getName() {
@@ -126,6 +179,12 @@ public class Field<T> implements Convertible, Validatable, Serializable {
         return verboseName;
     }
 
+    /**
+     * Input the field value from the console.
+     *
+     * @param console console
+     * @throws InputHandler.InputException if the input is invalid
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void input(Console console) throws InputHandler.InputException {
         if (value instanceof Enum) {
@@ -159,6 +218,9 @@ public class Field<T> implements Convertible, Validatable, Serializable {
         throw new UnsupportedOperationException("Input for " + value.getClass() + " is not supported");
     }
 
+    /**
+     * Default field checker that always returns true.
+     */
     private static class DefaultFieldChecker<T> implements FieldChecker<T> {
 
         @Override

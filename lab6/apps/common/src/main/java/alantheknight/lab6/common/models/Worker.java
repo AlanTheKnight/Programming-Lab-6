@@ -50,7 +50,7 @@ public class Worker extends CollectionElement {
     /**
      * Creation date of the worker record (generated automatically).
      */
-    private final Field<LocalDate> creationDate = new Field<>("creationDate", "Дата создания", LocalDate.now(), true, false);
+    public final Field<LocalDate> creationDate = new Field<>("creationDate", "Дата создания", LocalDate.now(), true, false);
 
     /**
      * Creates a new worker.
@@ -111,10 +111,10 @@ public class Worker extends CollectionElement {
     public static Worker fromElement(Element element) throws ElementConversionException {
         try {
             return new Worker(
-                    ElementConvertor.integerConvertor.fromElement(element.getElementsByTagName("id").item(0)),
+                    ElementConvertor.numberConvertor(Integer.class).fromElement(element.getElementsByTagName("id").item(0)),
                     ElementConvertor.stringConvertor.fromElement(element.getElementsByTagName("name").item(0)),
                     ElementConvertor.coordinatesConvertor.fromElement(element.getElementsByTagName("coordinates").item(0)),
-                    ElementConvertor.longConvertor.fromElement(element.getElementsByTagName("salary").item(0)),
+                    ElementConvertor.numberConvertor(Long.class).fromElement(element.getElementsByTagName("salary").item(0)),
                     ElementConvertor.dateConvertor.fromElement(element.getElementsByTagName("creationDate").item(0)),
                     ElementConvertor.dateConvertor.fromElement(element.getElementsByTagName("endDate").item(0)),
                     ElementConvertor.enumConvertor(Position.class).fromElement(element.getElementsByTagName("position").item(0)),

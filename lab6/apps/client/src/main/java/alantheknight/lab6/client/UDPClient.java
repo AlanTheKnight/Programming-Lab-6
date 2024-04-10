@@ -8,8 +8,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 
+import static alantheknight.lab6.client.Main.stdConsole;
 import static org.apache.commons.lang3.SerializationUtils.deserialize;
 import static org.apache.commons.lang3.SerializationUtils.serialize;
 
@@ -20,6 +22,7 @@ public class UDPClient extends UDPShared {
         super();
         try {
             socket = new DatagramSocket();
+            socket.setSoTimeout(config.clientConfig().responseTimeout()); // 10 seconds
         } catch (SocketException e) {
             throw new RuntimeException(e);
         }
@@ -59,6 +62,10 @@ public class UDPClient extends UDPShared {
             }
 
             return deserialize(buffer.array());
+
+        } catch (SocketTimeoutException e) {
+            stdConsole.printError("Сервер не отвечает на запрос");
+            return null;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

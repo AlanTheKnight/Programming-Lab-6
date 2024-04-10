@@ -1,39 +1,32 @@
 package alantheknight.lab6.server.commands;
 
 import alantheknight.lab6.common.commands.CommandType;
-import alantheknight.lab6.common.managers.CollectionManager;
 import alantheknight.lab6.common.models.Worker;
 import alantheknight.lab6.common.network.Request;
 import alantheknight.lab6.common.network.Response;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
+import static alantheknight.lab6.server.Main.collectionManager;
+import static alantheknight.lab6.server.managers.CollectionManager.workerCoordinatesComparator;
 
 /**
  * Command for adding a new element with a given key.
- *
- * @author AlanTheKnight
  */
 public class Show extends ServerCommand {
-    private final CollectionManager collectionManager;
-
-    /**
-     * Constructor for the command.
-     *
-     * @param collectionManager collection manager
-     */
-    public Show(CollectionManager collectionManager) {
+    public Show() {
         super(CommandType.SHOW);
-        this.collectionManager = collectionManager;
     }
 
     @Override
     public boolean validateRequest(Request request) {
-        return super.validateRequest(request) && !request.hasPayload();
+        return request.doesNotHavePayload();
     }
 
     @Override
-    public Response<List<Worker>> apply(Request request) {
-        List<Worker> workers = collectionManager.getCollection().stream().toList();
+    public Response<ArrayList<Worker>> apply(Request request) {
+        ArrayList<Worker> workers = collectionManager.getCollection().stream().sorted(workerCoordinatesComparator).collect(Collectors.toCollection(ArrayList::new));
         return new Response<>(getCommandType(), "Список элементов коллекции:", workers);
     }
 }

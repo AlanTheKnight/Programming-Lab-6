@@ -2,19 +2,31 @@ package alantheknight.lab6.common.network;
 
 import alantheknight.lab6.common.commands.CommandType;
 
-import java.io.Serial;
 import java.io.Serializable;
-import java.util.Optional;
 
+/**
+ * The Response class represents a response from the server.
+ */
 public class Response<T> implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
-
+    /**
+     * The success flag.
+     */
     private final boolean success;
+
+    /**
+     * The message.
+     */
     private final String message;
 
+    /**
+     * The command type.
+     */
     private final CommandType commandType;
-    private T payload;
+
+    /**
+     * The payload.
+     */
+    private final T payload;
 
     public Response(CommandType commandType, String message, T payload) {
         this.commandType = commandType;
@@ -37,7 +49,6 @@ public class Response<T> implements Serializable {
         this.payload = null;
     }
 
-    // Getter and setter methods
     public boolean isSuccess() {
         return success;
     }
@@ -48,14 +59,6 @@ public class Response<T> implements Serializable {
 
     public T getPayload() {
         return payload;
-    }
-
-    public void setPayload(T payload) {
-        this.payload = payload;
-    }
-
-    public boolean hasPayload() {
-        return Optional.ofNullable(payload).isPresent();
     }
 
     @Override

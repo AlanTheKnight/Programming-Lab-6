@@ -7,8 +7,6 @@ import alantheknight.lab6.common.utils.EnumHelper;
 
 /**
  * Input handler for enum values.
- *
- * @author AlanTheKnight
  */
 public final class EnumInputHandler {
     /**

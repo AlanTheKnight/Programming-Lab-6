@@ -9,8 +9,6 @@ import java.time.LocalDate;
 
 /**
  * Input for numeric values.
- *
- * @author AlanTheKnight
  */
 public final class LocalDateInputHandler {
     public static void input(Console console, Field<LocalDate> field)

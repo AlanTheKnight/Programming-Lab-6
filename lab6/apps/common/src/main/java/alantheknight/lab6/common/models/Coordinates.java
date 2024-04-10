@@ -1,9 +1,9 @@
 package alantheknight.lab6.common.models;
 
+import alantheknight.lab6.common.fields.ElementConvertor;
 import alantheknight.lab6.common.fields.Field;
 import alantheknight.lab6.common.fields.Model;
 import alantheknight.lab6.common.utils.ElementConversionException;
-import alantheknight.lab6.common.utils.Validatable;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.w3c.dom.Element;
 
@@ -11,7 +11,7 @@ import org.w3c.dom.Element;
 /**
  * Worker's coordinates model.
  */
-public class Coordinates extends Model {
+public class Coordinates extends Model implements Comparable<Coordinates> {
     /**
      * X coordinate (not null).
      */
@@ -49,8 +49,8 @@ public class Coordinates extends Model {
     public static Coordinates fromElement(Element element) throws ElementConversionException {
         try {
             return new Coordinates(
-                    Integer.parseInt(element.getElementsByTagName("x").item(0).getTextContent()),
-                    Float.parseFloat(element.getElementsByTagName("y").item(0).getTextContent())
+                    ElementConvertor.numberConvertor(Integer.class).fromElement(element.getElementsByTagName("x").item(0)),
+                    ElementConvertor.numberConvertor(Float.class).fromElement(element.getElementsByTagName("y").item(0))
             );
         } catch (NullPointerException e) {
             throw new ElementConversionException(e.getMessage());
@@ -75,5 +75,12 @@ public class Coordinates extends Model {
     @Override
     public int hashCode() {
         return x.getValue().hashCode() + y.getValue().hashCode();
+    }
+
+    @Override
+    public int compareTo(Coordinates coordinates) {
+        if (x.getValue().equals(coordinates.x.getValue()))
+            return Float.compare(y.getValue(), coordinates.y.getValue());
+        return Integer.compare(x.getValue(), coordinates.x.getValue());
     }
 }

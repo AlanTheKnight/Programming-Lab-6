@@ -5,8 +5,6 @@ import org.w3c.dom.Element;
 
 /**
  * Object that can be converted to XML element.
- *
- * @author AlanTheKnight
  */
 public interface Convertible {
     /**

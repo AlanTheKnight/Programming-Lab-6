@@ -6,8 +6,17 @@ import alantheknight.lab6.common.utils.ConfigReader;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
-public class UDPShared {
+/**
+ * Base class for UDP client and server.
+ */
+public abstract class UDPShared {
+    /**
+     * The configuration.
+     */
     protected final Config config;
+    /**
+     * The address.
+     */
     protected final InetSocketAddress address;
 
     public UDPShared() {

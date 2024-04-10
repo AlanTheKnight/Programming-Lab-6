@@ -1,4 +1,4 @@
-package alantheknight.lab6.common.managers;
+package alantheknight.lab6.server.managers;
 
 
 import alantheknight.lab6.common.models.Worker;
@@ -6,6 +6,7 @@ import alantheknight.lab6.common.models.Worker;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,15 +14,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * The CollectionManager class is responsible for managing the collection of
  * workers.
- *
- * @author AlanTheKnight
  */
 public class CollectionManager {
+    public static Comparator<Worker> workerCoordinatesComparator = new Comparator<>() {
+        @Override
+        public int compare(Worker o1, Worker o2) {
+            return o1.coordinates.getValue().compareTo(o2.coordinates.getValue());
+        }
+    };
     /**
      * The DumpManager used for reading and writing the collection.
      */
     private final DumpManager dumpManager;
-
     /**
      * The collection of workers.
      */
@@ -76,7 +80,6 @@ public class CollectionManager {
     /**
      * Adds a worker to the collection with the specified id.
      *
-     * @param id     Worker id.
      * @param worker Worker to add.
      */
     public void insertWorker(Worker worker) {
@@ -97,10 +100,9 @@ public class CollectionManager {
      * Removes the worker with the specified id from the collection.
      *
      * @param id Worker id.
-     * @return Removed worker.
      */
-    public Worker removeWorker(int id) {
-        return workers.remove(id);
+    public void removeWorker(int id) {
+        workers.remove(id);
     }
 
     /**
@@ -170,5 +172,9 @@ public class CollectionManager {
             }
         }
         return removed;
+    }
+
+    public boolean hasWorkerWithId(int id) {
+        return workers.containsKey(id);
     }
 }

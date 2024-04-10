@@ -4,6 +4,9 @@ package alantheknight.lab6.common.fields;
  * CollectionElement is a subclass of FieldsElement with an ID field.
  */
 public abstract class CollectionElement extends Model implements Comparable<CollectionElement> {
+    /**
+     * ID of the element (null if not set).
+     */
     public final Field<Integer> id = new Field<>("id", "ID", null, true);
 
     protected CollectionElement() {

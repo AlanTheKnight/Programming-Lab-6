@@ -11,8 +11,6 @@ import java.util.Objects;
 
 /**
  * Model for personal data of the worker.
- *
- * @author AlanTheKnight
  */
 public class Person extends Model {
     /**
@@ -71,8 +69,8 @@ public class Person extends Model {
     public static Person fromElement(Element element) throws ElementConversionException {
         try {
             return new Person(
-                    ElementConvertor.doubleConvertor.fromElement(element.getElementsByTagName("height").item(0)),
-                    ElementConvertor.longConvertor.fromElement(element.getElementsByTagName("weight").item(0)),
+                    ElementConvertor.numberConvertor(Double.class).fromElement(element.getElementsByTagName("height").item(0)),
+                    ElementConvertor.numberConvertor(Long.class).fromElement(element.getElementsByTagName("weight").item(0)),
                     ElementConvertor.enumConvertor(Color.class).fromElement(element.getElementsByTagName("hairColor").item(0)),
                     ElementConvertor.enumConvertor(Country.class).fromElement(element.getElementsByTagName("nationality").item(0))
             );

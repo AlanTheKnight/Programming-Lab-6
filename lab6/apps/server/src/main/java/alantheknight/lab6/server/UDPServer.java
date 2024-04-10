@@ -1,10 +1,8 @@
 package alantheknight.lab6.server;
 
-import alantheknight.lab6.common.managers.CommandManager;
 import alantheknight.lab6.common.network.Request;
 import alantheknight.lab6.common.network.Response;
 import alantheknight.lab6.common.network.UDPShared;
-import alantheknight.lab6.server.commands.ServerCommand;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -14,6 +12,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.*;
 
+import static alantheknight.lab6.server.Main.commandManager;
 import static org.apache.commons.lang3.SerializationUtils.deserialize;
 import static org.apache.commons.lang3.SerializationUtils.serialize;
 
@@ -27,19 +26,8 @@ public class UDPServer extends UDPShared {
      */
     private static final Map<SelectionKey, ByteBuffer> buffers = new HashMap<>();
 
-    /**
-     * The CommandManager for handling server commands.
-     */
-    private final CommandManager<ServerCommand> commandManager;
-
-    /**
-     * Constructs a new UDPServer with the specified CommandManager.
-     *
-     * @param commandManager The CommandManager for handling server commands.
-     */
-    public UDPServer(CommandManager<ServerCommand> commandManager) {
+    public UDPServer() {
         super();
-        this.commandManager = commandManager;
     }
 
     /**

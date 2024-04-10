@@ -6,8 +6,6 @@ import alantheknight.lab6.common.utils.Console;
 
 /**
  * Input for numeric values.
- *
- * @author AlanTheKnight
  */
 public final class StringInputHandler {
     public static void input(Console console, Field<String> field)

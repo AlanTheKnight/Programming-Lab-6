@@ -3,11 +3,11 @@ package alantheknight.lab6.common.fields.handlers;
 import alantheknight.lab6.common.fields.Field;
 import alantheknight.lab6.common.utils.Console;
 
+import static alantheknight.lab6.common.utils.NumberConvertor.convertNumber;
+
 
 /**
  * Input for numeric values.
- *
- * @author AlanTheKnight
  */
 public final class NumberInputHandler {
     /**
@@ -42,7 +42,7 @@ public final class NumberInputHandler {
             }
 
             try {
-                T number = (T) getNumber(numberClass, input);
+                T number = convertNumber(numberClass, input);
                 var isValid = field.isValid(number);
 
                 if (isValid.getLeft()) {
@@ -64,32 +64,6 @@ public final class NumberInputHandler {
                 }
             }
         }
-    }
-
-
-    /**
-     * Converts a string to a number.
-     *
-     * @param numberClass number class
-     * @param input       input string
-     * @param <T>         number type
-     * @return number
-     * @throws InputHandler.InputException if input is not a number
-     */
-    private static <T extends Number> T getNumber(Class<T> numberClass, String input) throws InputHandler.InputException {
-        T number;
-        if (numberClass == Integer.class) {
-            number = numberClass.cast(Integer.parseInt(input));
-        } else if (numberClass == Long.class) {
-            number = numberClass.cast(Long.parseLong(input));
-        } else if (numberClass == Float.class) {
-            number = numberClass.cast(Float.parseFloat(input));
-        } else if (numberClass == Double.class) {
-            number = numberClass.cast(Double.parseDouble(input));
-        } else {
-            throw new InputHandler.InputException("Unsupported number class: " + numberClass);
-        }
-        return number;
     }
 
 }

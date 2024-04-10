@@ -4,8 +4,6 @@ import java.util.Scanner;
 
 /**
  * Standard console.
- *
- * @author AlanTheKnight
  */
 public class StandardConsole implements Console {
     /**
@@ -33,7 +31,7 @@ public class StandardConsole implements Console {
 
     @Override
     public void printError(Object obj) {
-        System.out.println(ConsoleColors.colorize("Error: "  + obj, ConsoleColors.RED));
+        System.out.println(ConsoleColors.colorize("Error: " + obj, ConsoleColors.RED));
     }
 
     @Override

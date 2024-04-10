@@ -1,52 +1,57 @@
 package alantheknight.lab6.client.commands;
 
+import alantheknight.lab6.client.commands.validators.DefaultResponseValidator;
+import alantheknight.lab6.client.commands.validators.ResponseValidator;
 import alantheknight.lab6.common.commands.BaseCommand;
 import alantheknight.lab6.common.commands.CommandType;
-import alantheknight.lab6.common.managers.CommandManager;
+import alantheknight.lab6.common.fields.handlers.InputHandler;
 import alantheknight.lab6.common.network.Request;
 import alantheknight.lab6.common.network.Response;
-import alantheknight.lab6.common.utils.Console;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import java.util.List;
 
-public abstract class ClientCommand extends BaseCommand {
-    protected final ClientCommandManager commandManager;
-    protected final Console console;
+import static alantheknight.lab6.client.Main.commandManager;
+import static alantheknight.lab6.client.Main.stdConsole;
+
+public abstract class ClientCommand<ResponseType> extends BaseCommand {
     private final String description;
     private final String format;
     private final int argsCount;
 
+    private final ResponseValidator responseValidator;
 
-    public ClientCommand(CommandType type, String description, String format, Console console) {
+    public ClientCommand(CommandType type, String description, String format, ResponseValidator responseValidator) {
         super(type);
         this.description = description;
         this.format = format;
         this.argsCount = format.split(" ").length;
-        this.console = console;
-        this.commandManager = null;
+        this.responseValidator = responseValidator;
     }
 
-    public ClientCommand(CommandType type, String description, String format, Console console, ClientCommandManager commandManager) {
+    public ClientCommand(CommandType type, String description, String format) {
         super(type);
         this.description = description;
         this.format = format;
         this.argsCount = format.split(" ").length;
-        this.commandManager = commandManager;
-        this.console = console;
+        responseValidator = new DefaultResponseValidator();
     }
 
-    public static void bulkRegister(List<Class<? extends ClientCommand>> commands, ClientCommandManager commandManager, Console console) {
-        for (Class<? extends ClientCommand> command : commands) {
+    public static void bulkRegister(List<Class<? extends ClientCommand<?>>> commands) {
+        for (Class<? extends ClientCommand<?>> command : commands) {
             try {
-                commandManager.register(command.getConstructor(Console.class, ClientCommandManager.class).newInstance(console, commandManager));
+                commandManager.register(command.getConstructor().newInstance());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public abstract boolean apply(String[] arguments);
+    public String getDescription() {
+        return description;
+    }
+
+    public abstract boolean apply(String[] arguments) throws CommandExecutionException, InputHandler.InputException;
 
     /**
      * Read an id argument.
@@ -63,7 +68,7 @@ public abstract class ClientCommand extends BaseCommand {
             return null;
         }
         if (id < 0) {
-            console.printError("id не может быть отрицательным");
+            stdConsole.printError("id не может быть отрицательным");
             return null;
         }
         return id;
@@ -71,14 +76,6 @@ public abstract class ClientCommand extends BaseCommand {
 
     public int getArgsCount() {
         return argsCount;
-    }
-
-    public CommandManager<ClientCommand> getCommandManager() {
-        return commandManager;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     /**
@@ -103,8 +100,8 @@ public abstract class ClientCommand extends BaseCommand {
      * Print the arguments error message.
      */
     public void printArgsError() {
-        console.printError("Неверный формат аргументов.");
-        console.println("Использование: " + getFormat());
+        stdConsole.printError("Неверный формат аргументов.");
+        stdConsole.println("Использование: " + getFormat());
     }
 
     /**
@@ -118,8 +115,14 @@ public abstract class ClientCommand extends BaseCommand {
             checkArguments(arguments);
             return apply(arguments);
         } catch (IllegalArgumentsNumber e) {
-            console.printError(e.getMessage());
-            console.println("Использование: " + getFormat());
+            stdConsole.printError(e.getMessage());
+            stdConsole.println("Использование: " + getFormat());
+            return false;
+        } catch (CommandExecutionException e) {
+            stdConsole.printError("Ошибка выполнения команды: " + e.getMessage());
+            return false;
+        } catch (InputHandler.InputException e) {
+            stdConsole.printError("Ошибка ввода: " + e.getMessage());
             return false;
         }
     }
@@ -131,8 +134,8 @@ public abstract class ClientCommand extends BaseCommand {
      * @return response
      * @throws CommandExecutionException if the response is invalid
      */
-    public <T> Response<T> sendRequestAndHandleResponse(Request request) throws CommandExecutionException {
-        Response<T> response = commandManager.getClient().sendCommand(request);
+    public Response<ResponseType> sendRequestAndHandleResponse(Request request) throws CommandExecutionException {
+        Response<ResponseType> response = commandManager.getClient().sendCommand(request);
         var verdict = validateResponse(response);
         if (verdict.getLeft())
             return response;
@@ -152,17 +155,7 @@ public abstract class ClientCommand extends BaseCommand {
     }
 
     public ImmutablePair<Boolean, String> validateResponse(Response<?> response) {
-        if (response == null)
-            return new ImmutablePair<>(false, "Получен пустой ответ от сервера");
-        if (response.getCommandType() != getCommandType())
-            return new ImmutablePair<>(false, "Получен ответ на неверную команду");
-        if (!response.isSuccess())
-            return new ImmutablePair<>(false, response.getMessage());
-        return localValidateResponse(response);
-    }
-
-    protected ImmutablePair<Boolean, String> localValidateResponse(Response<?> response) {
-        return new ImmutablePair<>(true, null);
+        return responseValidator.validate(response, this);
     }
 
     /**

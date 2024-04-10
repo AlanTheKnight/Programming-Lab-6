@@ -1,6 +1,12 @@
 package alantheknight.lab6.common.commands;
 
+/**
+ * Base class for client and server commands.
+ */
 public abstract class BaseCommand {
+    /**
+     * The type of the command.
+     */
     private final CommandType commandType;
 
     public BaseCommand(CommandType commandType) {
@@ -10,11 +16,6 @@ public abstract class BaseCommand {
     public CommandType getCommandType() {
         return commandType;
     }
-
-    public String getName() {
-        return commandType.name();
-    }
-
 
     @Override
     public boolean equals(Object obj) {

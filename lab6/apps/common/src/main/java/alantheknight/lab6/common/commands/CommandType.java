@@ -1,14 +1,11 @@
 package alantheknight.lab6.common.commands;
 
 public enum CommandType {
-    INSERT(),
-    EXECUTE_SCRIPT(), SHOW(), HELP();
+    INSERT(), EXECUTE_SCRIPT(), SHOW(), HELP(), SAVE(), CLEAR(),
+    EXIT(), FILTER_BY_END_DATE(), HISTORY(), INFO(), REMOVE_ANY_BY_END_DATE(),
+    REMOVE_GREATER(), REMOVE_GREATER_KEY(), REMOVE_KEY(), UPDATE(), PRINT_ASCENDING;
 
     private final String commandName;
-
-    CommandType(String commandName) {
-        this.commandName = commandName;
-    }
 
     CommandType() {
         this.commandName = this.name().toLowerCase();

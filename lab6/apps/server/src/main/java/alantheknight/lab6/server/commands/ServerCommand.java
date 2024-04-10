@@ -2,12 +2,12 @@ package alantheknight.lab6.server.commands;
 
 import alantheknight.lab6.common.commands.BaseCommand;
 import alantheknight.lab6.common.commands.CommandType;
-import alantheknight.lab6.common.managers.CollectionManager;
-import alantheknight.lab6.common.managers.CommandManager;
 import alantheknight.lab6.common.network.Request;
 import alantheknight.lab6.common.network.Response;
 
 import java.util.List;
+
+import static alantheknight.lab6.server.Main.commandManager;
 
 /**
  * Server command.
@@ -17,10 +17,15 @@ public abstract class ServerCommand extends BaseCommand {
         super(commandType);
     }
 
-    public static void bulkRegister(List<Class<? extends ServerCommand>> commands, CommandManager<ServerCommand> commandManager, CollectionManager collectionManager) {
+    /**
+     * Register multiple commands.
+     *
+     * @param commands commands to register
+     */
+    public static void bulkRegister(List<Class<? extends ServerCommand>> commands) {
         for (Class<? extends ServerCommand> command : commands) {
             try {
-                commandManager.register(command.getConstructor(CollectionManager.class).newInstance(collectionManager));
+                commandManager.register(command.getConstructor().newInstance());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -28,14 +33,22 @@ public abstract class ServerCommand extends BaseCommand {
     }
 
     /**
-     * Validate the request (check if the command is correct and the payload is valid).
+     * Validate the command type.
      *
      * @param request request
      * @return true if the request is valid, false otherwise
      */
-    public boolean validateRequest(Request request) {
+    public boolean validateCommandType(Request request) {
         return request.getCommand() == getCommandType();
     }
+
+    /**
+     * Validate the request.
+     *
+     * @param request request
+     * @return true if the request is valid, false otherwise
+     */
+    public abstract boolean validateRequest(Request request);
 
     /**
      * Apply the command to the request (command's main logic).
@@ -52,7 +65,7 @@ public abstract class ServerCommand extends BaseCommand {
      * @return response
      */
     public Response<?> execute(Request request) {
-        if (!validateRequest(request)) {
+        if (!validateCommandType(request)) {
             return new Response<>(getCommandType(), "Неверный запрос", false);
         }
         return apply(request);

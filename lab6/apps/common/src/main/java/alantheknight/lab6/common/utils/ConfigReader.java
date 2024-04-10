@@ -25,7 +25,8 @@ public class ConfigReader {
                     ini.get("main", "address"),
                     ini.get("main", "buffer_size", Integer.class),
                     new Config.ClientConfig(
-                            ini.get("client", "max_recursion_level", Integer.class)
+                            ini.get("client", "max_recursion_level", Integer.class),
+                            ini.get("client", "response_timeout", Integer.class)
                     )
             );
         } catch (IOException e) {

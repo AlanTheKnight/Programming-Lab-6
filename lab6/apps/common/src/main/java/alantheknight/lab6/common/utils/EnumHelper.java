@@ -2,8 +2,6 @@ package alantheknight.lab6.common.utils;
 
 /**
  * Helper class for working with enums
- *
- * @author AlanTheKnight
  */
 public class EnumHelper {
     /**

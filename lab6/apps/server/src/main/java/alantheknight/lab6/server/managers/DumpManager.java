@@ -1,4 +1,4 @@
-package alantheknight.lab6.common.managers;
+package alantheknight.lab6.server.managers;
 
 import alantheknight.lab6.common.models.Worker;
 import alantheknight.lab6.common.utils.ElementConversionException;
@@ -25,8 +25,6 @@ import java.util.TreeMap;
 /**
  * The DumpManager class is responsible for reading and writing the collection
  * from/to the file.
- *
- * @author AlanTheKnight
  */
 public class DumpManager {
     /**

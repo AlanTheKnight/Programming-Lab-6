@@ -1,21 +1,21 @@
 package alantheknight.lab6.client.commands;
 
 import alantheknight.lab6.common.commands.CommandType;
-import alantheknight.lab6.common.utils.Console;
 
-public class Help extends ClientCommand {
-    public Help(Console console, ClientCommandManager commandManager) {
+import static alantheknight.lab6.client.Main.commandManager;
+import static alantheknight.lab6.client.Main.stdConsole;
+
+public class Help extends ClientCommand<Void> {
+    public Help() {
         super(CommandType.HELP, "Показать список доступных команд",
-                "help", console, commandManager);
+                "help");
     }
-
 
     @Override
     public boolean apply(String[] arguments) {
-        console.println("Список доступных команд:");
-        assert commandManager != null;
+        stdConsole.println("Список доступных команд:");
         commandManager.getCommands().values().forEach(command -> {
-            console.printTwoColumns(command.getFormat(), command.getDescription(), "-", 40);
+            stdConsole.printTwoColumns(command.getFormat(), command.getDescription(), "-", 40);
         });
         return true;
     }

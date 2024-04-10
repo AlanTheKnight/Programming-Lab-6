@@ -1,46 +1,50 @@
 package alantheknight.lab6.client.commands;
 
+import alantheknight.lab6.client.commands.validators.DefaultResponseValidator;
 import alantheknight.lab6.common.commands.CommandType;
 import alantheknight.lab6.common.models.Worker;
 import alantheknight.lab6.common.network.Request;
 import alantheknight.lab6.common.network.Response;
-import alantheknight.lab6.common.utils.Console;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
-import java.util.List;
+import java.util.ArrayList;
 
-public class Show extends ClientCommand {
-    public Show(Console console, ClientCommandManager commandManager) {
+import static alantheknight.lab6.client.Main.stdConsole;
+
+public class Show extends ClientCommand<ArrayList<Worker>> {
+    public Show() {
         super(CommandType.SHOW, "Показать все элементы коллекции",
-                "show", console, commandManager);
+                "show", new PayloadValidator());
     }
 
+    public Show(CommandType commandType, String description, String commandFormat) {
+        super(commandType, description, commandFormat, new PayloadValidator());
+    }
 
     @Override
-    public boolean apply(String[] arguments) {
-        try {
-            Request request = new Request(getCommandType());
-            Response<List<Worker>> response = sendRequestAndHandleResponse(request);
+    public boolean apply(String[] arguments) throws CommandExecutionException {
+        Request request = new Request(getCommandType());
+        var response = sendRequestAndHandleResponse(request);
 
-            if (response.getPayload().isEmpty()) {
-                console.println("Коллекция пуста");
-                return true;
-            }
-
-            console.println("Список элементов коллекции:");
-            response.getPayload().forEach(worker -> console.println(worker.toString()));
+        if (response.getPayload().isEmpty()) {
+            stdConsole.println("Коллекция пуста");
             return true;
-        } catch (CommandExecutionException e) {
-            console.printError("Ошибка выполнения команды: " + e.getMessage());
-            return false;
         }
+
+        stdConsole.println("Список элементов коллекции:");
+        response.getPayload().forEach(worker -> stdConsole.println(worker.toString()));
+        return true;
     }
 
-    @Override
-    protected ImmutablePair<Boolean, String> localValidateResponse(Response<?> response) {
-        if (!response.hasPayload() || !(response.getPayload() instanceof List)) {
-            return new ImmutablePair<>(false, "Ответ содержит неверный тип данных");
+    public static class PayloadValidator extends DefaultResponseValidator {
+        @Override
+        public ImmutablePair<Boolean, String> validate(Response<?> response, ClientCommand<?> command) {
+            ImmutablePair<Boolean, String> result = super.validate(response, command);
+            if (!result.getLeft()) return result;
+
+            if (response.getPayload() instanceof ArrayList)
+                return new ImmutablePair<>(true, null);
+            return new ImmutablePair<>(false, "Получен неверный тип данных");
         }
-        return new ImmutablePair<>(true, null);
     }
 }

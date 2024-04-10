@@ -8,20 +8,29 @@ import alantheknight.lab6.common.utils.StandardConsole;
 import java.util.List;
 
 public class Main {
+    public static final Console stdConsole = new StandardConsole();
+    public static final ClientCommandManager commandManager = new ClientCommandManager();
+
+    public static final CommandRunner commandRunner = new CommandRunner();
+
     public static void main(String[] args) {
-        Console console = new StandardConsole();
-
-        ClientCommandManager commandManager = new ClientCommandManager();
-
         var commands = List.of(
                 Insert.class,
                 Show.class,
-                Help.class
+                Help.class,
+                PrintAscending.class,
+                Update.class,
+                History.class,
+                RemoveAnyByEndDate.class,
+                RemoveKey.class,
+                RemoveGreaterKey.class,
+                FilterByEndDate.class,
+                ExecuteScript.class,
+                Exit.class
         );
 
-        ClientCommand.bulkRegister(commands, commandManager, console);
+        ClientCommand.bulkRegister(commands);
 
-        CommandRunner commandRunner = new CommandRunner(console, commandManager);
         commandRunner.setMaxRecursionLevel(ConfigReader.getConfig().clientConfig().maxRecursionLevel());
         commandRunner.run();
     }
