@@ -46,13 +46,10 @@ public class UDPClient extends UDPShared {
 
     public <T> Response<T> receiveResponse() {
         try {
-            System.out.println("Waiting for response...");
-
             byte[] header = new byte[Integer.BYTES];
             DatagramPacket packet = new DatagramPacket(header, header.length, address);
             socket.receive(packet);
             int dataSize = readDataSizeHeader(header);
-            System.out.println("Received data size: " + dataSize);
 
             ByteBuffer buffer = ByteBuffer.allocate(dataSize);
             while (buffer.hasRemaining()) {

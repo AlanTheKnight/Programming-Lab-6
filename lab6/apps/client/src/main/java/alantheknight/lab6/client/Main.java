@@ -26,7 +26,8 @@ public class Main {
                 RemoveGreaterKey.class,
                 FilterByEndDate.class,
                 ExecuteScript.class,
-                Exit.class
+                Exit.class,
+                Info.class
         );
 
         ClientCommand.bulkRegister(commands);

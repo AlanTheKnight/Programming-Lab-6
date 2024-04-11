@@ -3,6 +3,7 @@ package alantheknight.lab6.server.commands;
 import alantheknight.lab6.common.commands.CommandType;
 import alantheknight.lab6.common.network.Request;
 import alantheknight.lab6.common.network.Response;
+import alantheknight.lab6.common.utils.ConsoleColors;
 
 import static alantheknight.lab6.server.Main.collectionManager;
 
@@ -22,9 +23,9 @@ public class Info extends ServerCommand {
     @Override
     public Response<Void> apply(Request request) {
         String info = "Сведения о коллекции: \n" +
-                "Тип: " + collectionManager.getWorkers().getClass().getName() + "\n" +
-                "Количество элементов: " + collectionManager.getCollection().size() + "\n" +
-                "Дата инициализации: " + collectionManager.getLastInitTime().toLocalDate().toString() + " " +
+                ConsoleColors.colorize("Тип: ", ConsoleColors.BLUE) + collectionManager.getWorkers().getClass().getName() + "\n" +
+                ConsoleColors.colorize("Количество элементов: ", ConsoleColors.BLUE) + collectionManager.getCollection().size() + "\n" +
+                ConsoleColors.colorize("Дата инициализации: ", ConsoleColors.BLUE) + collectionManager.getLastInitTime().toLocalDate().toString() + " " +
                 collectionManager.getLastInitTime().toLocalTime().toString() + "\n";
         return new Response<>(getCommandType(), info);
     }

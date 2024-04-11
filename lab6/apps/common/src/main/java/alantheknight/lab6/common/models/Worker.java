@@ -125,13 +125,4 @@ public class Worker extends CollectionElement {
             throw new ElementConversionException(e.getMessage());
         }
     }
-
-    /**
-     * Returns the end date of the worker's contract.
-     *
-     * @return end date
-     */
-    public LocalDate getEndDate() {
-        return endDate.getValue();
-    }
 }

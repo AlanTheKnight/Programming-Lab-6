@@ -28,7 +28,7 @@ public class FilterByEndDate extends ServerCommand {
     public Response<ArrayList<Worker>> apply(Request request) {
         var endDate = request.getPayload().endDate();
         ArrayList<Worker> workers = collectionManager.getWorkers().values().stream()
-                .filter(w -> w.getEndDate().equals(endDate))
+                .filter(w -> w.endDate.getValue().equals(endDate))
                 .sorted(workerCoordinatesComparator)
                 .collect(Collectors.toCollection(ArrayList::new));
         return new Response<>(getCommandType(), "Найдено " + workers.size() + " элементов с датой окончания " + endDate, workers);

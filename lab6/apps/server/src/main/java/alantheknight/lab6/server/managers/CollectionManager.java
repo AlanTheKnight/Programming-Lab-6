@@ -146,7 +146,7 @@ public class CollectionManager {
      */
     public Worker removeWorkerByEndDate(LocalDate endDate) {
         var w = workers.entrySet().stream()
-                .filter(worker -> worker.getValue().getEndDate().equals(endDate))
+                .filter(worker -> worker.getValue().endDate.getValue().equals(endDate))
                 .findFirst();
         if (w.isEmpty()) return null;
         Worker worker = w.get().getValue();
@@ -166,7 +166,7 @@ public class CollectionManager {
         }
         int removed = 0;
         for (var worker : workers.entrySet()) {
-            if (worker.getValue().getEndDate().isAfter(endDate)) {
+            if (worker.getValue().endDate.getValue().isAfter(endDate)) {
                 workers.remove(worker.getKey());
                 removed++;
             }
