@@ -3,6 +3,7 @@ package alantheknight.lab6.server;
 import alantheknight.lab6.common.network.Request;
 import alantheknight.lab6.common.network.Response;
 import alantheknight.lab6.common.network.UDPShared;
+import org.apache.logging.log4j.Level;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -13,6 +14,7 @@ import java.nio.channels.Selector;
 import java.util.*;
 
 import static alantheknight.lab6.server.Main.commandManager;
+import static alantheknight.lab6.server.Main.logger;
 import static org.apache.commons.lang3.SerializationUtils.deserialize;
 import static org.apache.commons.lang3.SerializationUtils.serialize;
 
@@ -35,7 +37,7 @@ public class UDPServer extends UDPShared {
      */
     public void start() {
         try (Selector selector = Selector.open(); DatagramChannel channel = createChannel()) {
-            System.out.println("Server started on " + channel.getLocalAddress());
+            logger.log(Level.INFO, "Server started on " + channel.getLocalAddress());
             channel.register(selector, SelectionKey.OP_READ);
 
             while (true) {
@@ -94,12 +96,16 @@ public class UDPServer extends UDPShared {
         InetSocketAddress clientAddress = (InetSocketAddress) selectedChannel.receive(headerBuffer);
 
         if (clientAddress != null) {
+            logger.log(Level.INFO, "Received header from client at " + clientAddress);
+
             headerBuffer.flip();
             final int dataSize = headerBuffer.getInt();
             headerBuffer.clear();
 
             ByteBuffer buffer = ByteBuffer.allocate(dataSize);
             buffers.put(key, buffer);
+
+            logger.log(Level.DEBUG, "Expecting data of size " + dataSize + " bytes from client at " + clientAddress);
         }
     }
 
@@ -115,15 +121,17 @@ public class UDPServer extends UDPShared {
         InetSocketAddress clientAddress = (InetSocketAddress) selectedChannel.receive(buffer);
 
         if (clientAddress != null) {
+            logger.log(Level.INFO, "Received data from client at " + clientAddress);
+
             buffer.flip();
             Request request = deserialize(buffer.array());
             buffer.clear();
 
+            logger.log(Level.INFO, "Executing command: " + request.getCommand());
+
             var response = commandManager.getCommand(request.getCommand()).execute(request);
 
             sendResponse(selectedChannel, clientAddress, response);
-
-            System.out.println("Received from client at " + clientAddress + ": " + request);
 
             buffers.remove(key);
         }
@@ -145,7 +153,7 @@ public class UDPServer extends UDPShared {
             channel.send(ByteBuffer.wrap(chunk), clientAddress);
         }
 
-        System.out.println("Sent to client at " + clientAddress + ": " + response);
+        logger.log(Level.INFO, "Sent response of " + (int) Math.ceil((double) responseData.length / bufferSize) + " chunks to client at " + clientAddress);
     }
 
     /**

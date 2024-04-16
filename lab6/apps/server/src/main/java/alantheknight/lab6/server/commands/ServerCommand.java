@@ -4,10 +4,12 @@ import alantheknight.lab6.common.commands.BaseCommand;
 import alantheknight.lab6.common.commands.CommandType;
 import alantheknight.lab6.common.network.Request;
 import alantheknight.lab6.common.network.Response;
+import org.apache.logging.log4j.Level;
 
 import java.util.List;
 
 import static alantheknight.lab6.server.Main.commandManager;
+import static alantheknight.lab6.server.Main.logger;
 
 /**
  * Server command.
@@ -27,6 +29,7 @@ public abstract class ServerCommand extends BaseCommand {
             try {
                 commandManager.register(command.getConstructor().newInstance());
             } catch (Exception e) {
+                logger.log(Level.ERROR, "Failed to register command: " + e.getMessage());
                 throw new RuntimeException(e);
             }
         }
